@@ -9,12 +9,11 @@ import {
 import { protect, validateRequest } from "../middleware";
 import { 
     createBlogValidator, 
-    deleteBlogValidator, 
     getBlogByIdValidator, 
     updateBlogValidator 
 } from "../utils";
 
-export const blogRouter = Router();
+const blogRouter = Router();
 
 blogRouter.route('/')
     .get(protect, GetBlogs)
@@ -23,4 +22,6 @@ blogRouter.route('/')
 blogRouter.route('/:_id')
     .get(protect, getBlogByIdValidator, validateRequest, GetBlogById)
     .patch(protect, updateBlogValidator, validateRequest, UpdateBlog)
-    .delete(protect, deleteBlogValidator, validateRequest, DeleteBlog);
+    .delete(protect, getBlogByIdValidator, validateRequest, DeleteBlog);
+
+export default blogRouter;    

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { 
-    createCommentValidator, 
-    deleteCommentValidator, 
+    createCommentValidator,
     getCommentValidator, 
     updateCommentValidator 
 } from "../utils";
@@ -13,11 +12,13 @@ import {
     updateComment 
 } from "../controllers/comment";
 
-export const commentRouter = Router()
+const commentRouter = Router();
 
 commentRouter.route('/:_id')
     .get(protect, getCommentValidator, validateRequest, getComments)
     .patch(protect, updateCommentValidator, validateRequest, updateComment)
-    .delete(protect, deleteCommentValidator, validateRequest, deleteComment);
+    .delete(protect, getCommentValidator, validateRequest, deleteComment);
 
 commentRouter.post('/', protect, createCommentValidator, validateRequest, createComment);
+
+export default commentRouter;

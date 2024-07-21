@@ -26,7 +26,7 @@ CLOUDINARY_API_KEY='Your Cloudinary api key'.
 CLOUDINARY_API_SECRET='Your Cloudinary api secret.'
 ```
 
-You can create JWT_TOKEN by using following commands in node terminal:
+You can create JWT_TOKEN by using following command in node terminal:
 
 ```bash
 $ require('crypto').randomBytes(64).toString('hex')

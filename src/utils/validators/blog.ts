@@ -53,10 +53,3 @@ export const updateBlogValidator = [
         .optional()
         .trim()    
 ]
-
-export const deleteBlogValidator = [
-    param('_id')
-        .trim()
-        .isMongoId()
-        .withMessage('Id must be a 24 character hex string, 12 byte Uint8Array, or an integer.'),
-]

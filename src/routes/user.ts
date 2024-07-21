@@ -8,7 +8,7 @@ import {
     updateDetailsValidation,
 } from "../utils";
 
-export const userRouter = Router();
+const userRouter = Router();
 
 userRouter.post(
     '/register', 
@@ -29,3 +29,5 @@ userRouter.post('/logout', Logout);
 userRouter.route('/')
     .get(protect, getDetailsValidation, validateRequest, GetUserInfo)
     .patch(protect, updateDetailsValidation, validateRequest, UploadFile('dp'), UpdateUserInfo);
+
+export default userRouter;    
