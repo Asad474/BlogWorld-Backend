@@ -29,7 +29,6 @@ app.get('/', (req, res) => {
 //Setting Routes
 setUpRoutes(app);
 
-
 app.use(NotFoundHandler);
 app.use(ErrorHandler);
 
