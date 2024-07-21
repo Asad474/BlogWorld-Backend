@@ -9,7 +9,7 @@ const routes = [
     { path: '/comment', router: commentRouter },
 ];
 
-const setUpRoutes = (app: Express)  => {
+const setUpRoutes = (app: Express) => {
     routes.forEach(route => {
         app.use(route.path, route.router);
     });
