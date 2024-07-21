@@ -62,8 +62,8 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
         const { _id } = req.params;
         const { title, category, content } = req.body;
 
-        const obj = await Blog.findByIdAndUpdate(
-            _id,
+        const obj = await Blog.findOneAndUpdate(
+            { blog: _id, user: req.user?._id },
             {
                 $set: {
                     title,
@@ -74,7 +74,7 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
         );
 
         if (!obj){
-            throw new BadRequestError('Blog does not exist with the given id.');
+            throw new BadRequestError('Invalid Blog or User id.');
         }
 
         return res.status(200).send('Updated');
@@ -87,10 +87,10 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
 export const DeleteBlog = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
-        const obj = await Blog.findByIdAndDelete(_id);
+        const obj = await Blog.findOneAndDelete({ blog: _id, user: req.user?._id });
 
         if (!obj){
-            throw new BadRequestError('Blog does not exist with the given id.');
+            throw new BadRequestError('Invalid Blog or User id.');
         }
 
         return res.status(200).send('Deleted');

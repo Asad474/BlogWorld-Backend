@@ -45,15 +45,15 @@ export const updateComment = async(req: ExtendRequest, res: Response, next: Next
         const { _id } = req.params;
         const { comment } = req.body;
 
-        const obj = await Comment.findByIdAndUpdate(
-            _id,
+        const obj = await Comment.findOneAndUpdate(
+            { _id, user: req.user?._id },
             {
                 $set: { comment }
             }
         );
 
         if (!obj){
-            throw new BadRequestError('Comment does not exists.');
+            throw new BadRequestError('Invalid Comment or User id.');
         }
 
         return res.status(200).send('Updated');
@@ -66,10 +66,10 @@ export const updateComment = async(req: ExtendRequest, res: Response, next: Next
 export const deleteComment = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
-        const obj = await Comment.findByIdAndDelete(_id);
+        const obj = await Comment.findOneAndDelete({ _id, user: req.user?._id });
 
         if (!obj){
-            throw new BadRequestError('Comment does not exists.');
+            throw new BadRequestError('Invalid Comment or User id.');
         }
 
         return res.status(200).send('Deleted');
