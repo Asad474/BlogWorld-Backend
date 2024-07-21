@@ -1,9 +1,9 @@
-import { Express } from "express";
+import { Express, Router } from "express";
 import blogRouter from "./blog";
 import userRouter from "./user";
 import commentRouter from "./comment";
 
-const routes = [
+const routes: { path: string, router: Router }[] = [
     { path: '/user', router: userRouter },
     { path: '/blog', router: blogRouter },
     { path: '/comment', router: commentRouter },
