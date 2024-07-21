@@ -7,7 +7,7 @@ const routes = [
     { path: '/user', router: userRouter },
     { path: '/blog', router: blogRouter },
     { path: '/comment', router: commentRouter },
-]
+];
 
 const setUpRoutes = (app: Express)  => {
     routes.forEach(route => {
