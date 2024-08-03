@@ -16,6 +16,7 @@ export const createBlogValidator = [
     body('title')
         .notEmpty()
         .withMessage('Title is required.')
+        .bail()
         .trim()
         .escape()
         .isLength({ max: 30 })
