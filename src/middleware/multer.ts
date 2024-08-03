@@ -6,9 +6,13 @@ import fs from "fs";
 
 const uploadDir = `${path.join(__dirname, '..')}/uploads`;
 
-if (!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir);
-}
+fs.promises.mkdir(uploadDir)
+  .catch(err => {
+    if (err.code !== 'EEXIST') {
+        // Handle any errors that are not due to the directory already existing
+        throw err;
+    }
+});
 
 const storage = multer.diskStorage({
     destination: (
