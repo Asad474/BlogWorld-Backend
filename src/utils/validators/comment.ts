@@ -4,6 +4,7 @@ export const createCommentValidator = [
     body('blog')
         .notEmpty()
         .withMessage('Please provide blog id.')
+        .bail()
         .trim()
         .isMongoId()
         .withMessage('Id must be a 24 character hex string, 12 byte Uint8Array, or an integer.'),
@@ -11,6 +12,7 @@ export const createCommentValidator = [
     body('comment')    
         .notEmpty()
         .withMessage('Please provide comment.')
+        .bail()
         .trim()
         .escape()
 ]

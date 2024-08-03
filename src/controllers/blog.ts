@@ -2,7 +2,6 @@ import { NextFunction, Response } from "express";
 import { ExtendRequest } from "../interfaces";
 import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
-import { Types } from "mongoose";
 
 export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
@@ -27,11 +26,10 @@ export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunct
 export const GetBlogById = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
-        const ObjectId = Types.ObjectId;
 
         const blog = await Blog.aggregate([
             {
-                $match: { _id: new ObjectId(_id) } 
+                $match: { _id } 
             }, 
 
             {

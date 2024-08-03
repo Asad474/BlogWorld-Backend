@@ -4,6 +4,7 @@ export const getDetailsValidation = [
     query('_id')
         .notEmpty()
         .withMessage('Please provide user id.')
+        .bail()
         .trim()
         .isMongoId()
         .withMessage('Id must be a 24 character hex string, 12 byte Uint8Array, or an integer.')

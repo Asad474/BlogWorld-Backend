@@ -1,10 +1,15 @@
 import { body, param } from "express-validator";
+import { Types } from "mongoose";
+
+const ObjectId = Types.ObjectId;
 
 export const getBlogByIdValidator = [
     param('_id')
         .trim()
         .isMongoId()
         .withMessage('Id must be a 24 character hex string, 12 byte Uint8Array, or an integer.')
+        .bail() // Stops running validations if any of the previous ones have failed.
+        .customSanitizer(_id => ObjectId.createFromHexString(_id))
 ]
 
 export const createBlogValidator = [
