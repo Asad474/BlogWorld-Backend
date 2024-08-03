@@ -38,5 +38,5 @@ $ require('crypto').randomBytes(64).toString('hex')
 To start backend server, run: 
 
 ```bash
-$ npm run server
+$ npm run dev
 ```

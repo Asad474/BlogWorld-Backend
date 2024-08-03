@@ -1,20 +1,33 @@
 import { NextFunction, Response } from "express";
 import { ExtendRequest } from "../interfaces";
-import { Blog } from "../models";
+import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
 
 export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { search } = req.query;
-        const blogs = await Blog.find(
-            search ? {
-                $or: [
-                    { title: { $regex: search } },
-                    { category: { $regex: search } },
-                    { content: { $regex: search } },
-                ]
-            } : {}
-        ).lean();
+        const searchObj = { $regex: search || '', $options: 'i' };
+
+        const blogs = await Blog.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { title: searchObj },
+                        { category: searchObj },
+                        { content: searchObj },
+                    ]
+                }
+            }, 
+
+            {
+                $lookup: {
+                    from: "comment",
+                    localField: "_id",
+                    foreignField: "blog",
+                    as: "comments"
+                }
+            }
+        ]);
 
         return res.status(200).send(blogs);
     } catch (error) {
@@ -63,7 +76,7 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
         const { title, category, content } = req.body;
 
         const obj = await Blog.findOneAndUpdate(
-            { blog: _id, user: req.user?._id },
+            { _id, user: req.user?._id },
             {
                 $set: {
                     title,
@@ -87,11 +100,13 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
 export const DeleteBlog = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
-        const obj = await Blog.findOneAndDelete({ blog: _id, user: req.user?._id });
+        const obj = await Blog.findOneAndDelete({ _id, user: req.user?._id });
 
         if (!obj){
             throw new BadRequestError('Invalid Blog or User id.');
         }
+
+        // await Comment.deleteMany({ blog: _id });
 
         return res.status(200).send('Deleted');
     } catch (error) {

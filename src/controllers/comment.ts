@@ -3,22 +3,6 @@ import { ExtendRequest } from "../interfaces";
 import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
 
-export const getComments = async(req: ExtendRequest, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
-
-        if (!await Blog.findById(_id)){
-            throw new BadRequestError('Blog does not exist with the given id.')
-        }
-
-        const comments = await Comment.find({ blog: _id });
-        return res.status(200).send(comments);
-    } catch (error) {
-        console.log(error);
-        next(error);        
-    }
-}
-
 export const createComment = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { blog, comment } = req.body;
