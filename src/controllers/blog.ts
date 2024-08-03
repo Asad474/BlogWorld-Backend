@@ -9,15 +9,13 @@ export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunct
         const { search } = req.query;
         const searchObj = { $regex: search || '', $options: 'i' };
 
-        const blogs = await Blog.find(
-            search ? {
-                $or: [
-                    { title: searchObj },
-                    { category: searchObj },
-                    { content: searchObj },
-                ]
-            } : {}
-        ).lean();
+        const blogs = await Blog.find({
+            $or: [
+                { title: searchObj },
+                { category: searchObj },
+                { content: searchObj },
+            ]
+        }).lean();
 
         return res.status(200).send(blogs);
     } catch (error) {
