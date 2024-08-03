@@ -4,13 +4,13 @@ import { model, Schema } from "mongoose";
 const CommentSchema = new Schema <IComment> (
     {
         user: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
 
         blog: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: "Blog",
             required: true,
         },

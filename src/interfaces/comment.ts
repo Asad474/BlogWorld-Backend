@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 export interface IComment {
-    user: string,
-    blog: string,
+    user: Types.ObjectId,
+    blog: Types.ObjectId,
     comment: string,
 }

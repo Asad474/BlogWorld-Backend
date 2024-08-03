@@ -2,32 +2,22 @@ import { NextFunction, Response } from "express";
 import { ExtendRequest } from "../interfaces";
 import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
+import { Types } from "mongoose";
 
 export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { search } = req.query;
         const searchObj = { $regex: search || '', $options: 'i' };
 
-        const blogs = await Blog.aggregate([
-            {
-                $match: {
-                    $or: [
-                        { title: searchObj },
-                        { category: searchObj },
-                        { content: searchObj },
-                    ]
-                }
-            }, 
-
-            {
-                $lookup: {
-                    from: "comment",
-                    localField: "_id",
-                    foreignField: "blog",
-                    as: "comments"
-                }
-            }
-        ]);
+        const blogs = await Blog.find(
+            search ? {
+                $or: [
+                    { title: searchObj },
+                    { category: searchObj },
+                    { content: searchObj },
+                ]
+            } : {}
+        ).lean();
 
         return res.status(200).send(blogs);
     } catch (error) {
@@ -39,9 +29,24 @@ export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunct
 export const GetBlogById = async(req: ExtendRequest, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
-        const blog = await Blog.findById(_id).lean();
+        const ObjectId = Types.ObjectId;
 
-        if (!blog){
+        const blog = await Blog.aggregate([
+            {
+                $match: { _id: new ObjectId(_id) } 
+            }, 
+
+            {
+                $lookup: {
+                    from: "comments",
+                    localField: "_id",
+                    foreignField: "blog",
+                    as: "comments"
+                }
+            }
+        ]);
+
+        if (blog.length === 0){
             throw new BadRequestError('Blog does not exist with the given id.');
         }
 

@@ -4,7 +4,7 @@ import { IBlog } from "../interfaces";
 const BlogSchema = new Schema <IBlog> (
     {
         user: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
         }, 
