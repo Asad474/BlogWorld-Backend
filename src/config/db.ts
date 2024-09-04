@@ -6,19 +6,19 @@ export const DBConnection = async() => {
 
         mongoose.connection.on('connected', () => {
             console.log('Database connected successfully.');
-        })
+        });
 
         mongoose.connection.on('disconnected', () => {
             console.error('Mongoose connection disconnected.');
-        })
+        });
 
         mongoose.connection.on('error', err => {
             console.error(`Error occurred after connection ${err}`);
-        })
+        });
 
         await mongoose.connect(url);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         process.exit(1);
     }
 }
