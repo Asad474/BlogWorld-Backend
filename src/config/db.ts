@@ -9,11 +9,11 @@ export const DBConnection = async() => {
         });
 
         mongoose.connection.on('disconnected', () => {
-            console.error('Mongoose connection disconnected.');
+            console.error('Database connection disconnected.');
         });
 
         mongoose.connection.on('error', err => {
-            console.error(`Error occurred after connection ${err}`);
+            console.error(`Error occurred: ${err}`);
         });
 
         await mongoose.connect(url);
