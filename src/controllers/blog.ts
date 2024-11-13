@@ -1,9 +1,8 @@
-import { NextFunction, Response } from "express";
-import { ExtendRequest } from "../interfaces";
+import { NextFunction, Response, Request } from "express";
 import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
 
-export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const GetBlogs = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { search } = req.query;
         const searchObj = { $regex: search || '', $options: 'i' };
@@ -23,7 +22,7 @@ export const GetBlogs = async(req: ExtendRequest, res: Response, next: NextFunct
     }
 }
 
-export const GetBlogById = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const GetBlogById = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
 
@@ -53,7 +52,7 @@ export const GetBlogById = async(req: ExtendRequest, res: Response, next: NextFu
     }
 }
 
-export const CreateBlog = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const CreateBlog = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { title, category, content } = req.body;
 
@@ -71,7 +70,7 @@ export const CreateBlog = async(req: ExtendRequest, res: Response, next: NextFun
     }
 }
 
-export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const UpdateBlog = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
         const { title, category, content } = req.body;
@@ -98,7 +97,7 @@ export const UpdateBlog = async(req: ExtendRequest, res: Response, next: NextFun
     }   
 }
 
-export const DeleteBlog = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const DeleteBlog = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
         const obj = await Blog.findOneAndDelete({ _id, user: req.user?._id });

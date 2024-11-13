@@ -1,8 +1,7 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models";
 import { UnauthorizedError } from "../utils";
-import { ExtendRequest } from "../interfaces";
 
 const jwtVerify = (token: string, secret: string): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -15,7 +14,7 @@ const jwtVerify = (token: string, secret: string): Promise<any> => {
     });
 }
 
-export const protect = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const protect = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.jwt_token;
 

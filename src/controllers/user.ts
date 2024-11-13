@@ -1,9 +1,8 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { User } from "../models";
-import { ExtendRequest } from "../interfaces";
 import { BadRequestError, DeleteFromCloudinary, UploadCloudinary } from "../utils";
 
-export const GetUserInfo = async (req: ExtendRequest, res: Response, next: NextFunction) => {
+export const GetUserInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.query;
 
@@ -22,7 +21,7 @@ export const GetUserInfo = async (req: ExtendRequest, res: Response, next: NextF
     }
 }
 
-export const UpdateUserInfo = async (req: ExtendRequest, res: Response, next: NextFunction) => {
+export const UpdateUserInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, email } = req.body;
         let dp;

@@ -1,9 +1,8 @@
-import { NextFunction, Response } from "express";
-import { ExtendRequest } from "../interfaces";
+import { NextFunction, Response, Request } from "express";
 import { Blog, Comment } from "../models";
 import { BadRequestError } from "../utils";
 
-export const createComment = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const createComment = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { blog, comment } = req.body;
 
@@ -24,7 +23,7 @@ export const createComment = async(req: ExtendRequest, res: Response, next: Next
     }
 }
 
-export const updateComment = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const updateComment = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
         const { comment } = req.body;
@@ -47,7 +46,7 @@ export const updateComment = async(req: ExtendRequest, res: Response, next: Next
     }
 }
 
-export const deleteComment = async(req: ExtendRequest, res: Response, next: NextFunction) => {
+export const deleteComment = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { _id } = req.params;
         const obj = await Comment.findOneAndDelete({ _id, user: req.user?._id });
