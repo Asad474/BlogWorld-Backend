@@ -1,63 +1,75 @@
 import { NextFunction, Response, Request } from "express";
 import { Blog, Comment } from "../models";
-import { BadRequestError } from "../utils";
+import { BadRequestError } from "../errors";
 
-export const createComment = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { blog, comment } = req.body;
+export const createComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { blog, comment } = req.body;
 
-        if (!await Blog.findById(blog)){
-            throw new BadRequestError('Blog does not exist with the given id.')
-        }
-
-        const obj = await Comment.create({
-            user: req.user?._id,
-            blog,
-            comment
-        });
-
-        return res.status(201).send(obj);
-    } catch (error) {
-        console.log(error);
-        next(error);
+    if (!(await Blog.findById(blog))) {
+      throw new BadRequestError("Blog does not exist with the given id.");
     }
-}
 
-export const updateComment = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
-        const { comment } = req.body;
+    const obj = await Comment.create({
+      user: req.user?._id,
+      blog,
+      comment,
+    });
 
-        const obj = await Comment.findOneAndUpdate(
-            { _id, user: req.user?._id },
-            {
-                $set: { comment }
-            }
-        );
+    return res.status(201).send(obj);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
-        if (!obj){
-            throw new BadRequestError('Invalid Comment or User id.');
-        }
+export const updateComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id } = req.params;
+    const { comment } = req.body;
 
-        return res.status(200).send('Updated');
-    } catch (error) {
-        console.log(error);
-        next(error);        
+    const obj = await Comment.findOneAndUpdate(
+      { _id, user: req.user?._id },
+      {
+        $set: { comment },
+      }
+    );
+
+    if (!obj) {
+      throw new BadRequestError("Invalid Comment or User id.");
     }
-}
 
-export const deleteComment = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
-        const obj = await Comment.findOneAndDelete({ _id, user: req.user?._id });
+    return res.status(200).send("Updated");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
-        if (!obj){
-            throw new BadRequestError('Invalid Comment or User id.');
-        }
+export const deleteComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id } = req.params;
+    const obj = await Comment.findOneAndDelete({ _id, user: req.user?._id });
 
-        return res.status(200).send('Deleted');
-    } catch (error) {
-        console.log(error);
-        next(error);        
+    if (!obj) {
+      throw new BadRequestError("Invalid Comment or User id.");
     }
-}
+
+    return res.status(200).send("Deleted");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};

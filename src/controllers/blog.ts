@@ -1,116 +1,136 @@
 import { NextFunction, Response, Request } from "express";
 import { Blog, Comment } from "../models";
-import { BadRequestError } from "../utils";
+import { BadRequestError } from "../errors";
 
-export const GetBlogs = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { search } = req.query;
-        const searchObj = { $regex: search || '', $options: 'i' };
+export const GetBlogs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { search } = req.query;
+    const searchObj = { $regex: search || "", $options: "i" };
 
-        const blogs = await Blog.find({
-            $or: [
-                { title: searchObj },
-                { category: searchObj },
-                { content: searchObj },
-            ]
-        }).lean();
+    const blogs = await Blog.find({
+      $or: [
+        { title: searchObj },
+        { category: searchObj },
+        { content: searchObj },
+      ],
+    }).lean();
 
-        return res.status(200).send(blogs);
-    } catch (error) {
-        console.log(error);
-        next(error);
+    return res.status(200).send(blogs);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const GetBlogById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id } = req.params;
+
+    const blog = await Blog.aggregate([
+      {
+        $match: { _id },
+      },
+
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "blog",
+          as: "comments",
+        },
+      },
+    ]);
+
+    if (blog.length === 0) {
+      throw new BadRequestError("Blog does not exist with the given id.");
     }
-}
 
-export const GetBlogById = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
+    return res.status(200).send(blog);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
-        const blog = await Blog.aggregate([
-            {
-                $match: { _id } 
-            }, 
+export const CreateBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { title, category, content } = req.body;
 
-            {
-                $lookup: {
-                    from: "comments",
-                    localField: "_id",
-                    foreignField: "blog",
-                    as: "comments"
-                }
-            }
-        ]);
+    const blog = await Blog.create({
+      user: req.user?._id,
+      title,
+      category,
+      content,
+    });
 
-        if (blog.length === 0){
-            throw new BadRequestError('Blog does not exist with the given id.');
-        }
+    return res.status(201).send(blog);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
-        return res.status(200).send(blog);
-    } catch (error) {
-        console.log(error);
-        next(error);
+export const UpdateBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id } = req.params;
+    const { title, category, content } = req.body;
+
+    const obj = await Blog.findOneAndUpdate(
+      { _id, user: req.user?._id },
+      {
+        $set: {
+          title,
+          category,
+          content,
+        },
+      }
+    );
+
+    if (!obj) {
+      throw new BadRequestError("Invalid Blog or User id.");
     }
-}
 
-export const CreateBlog = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { title, category, content } = req.body;
+    return res.status(200).send("Updated");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
-        const blog = await Blog.create({
-            user: req.user?._id,
-            title,
-            category,
-            content,
-        });
+export const DeleteBlog = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id } = req.params;
+    const obj = await Blog.findOneAndDelete({ _id, user: req.user?._id });
 
-        return res.status(201).send(blog);
-    } catch (error) {
-        console.log(error);
-        next(error);
+    if (!obj) {
+      throw new BadRequestError("Invalid Blog or User id.");
     }
-}
 
-export const UpdateBlog = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
-        const { title, category, content } = req.body;
+    // await Comment.deleteMany({ blog: _id });
 
-        const obj = await Blog.findOneAndUpdate(
-            { _id, user: req.user?._id },
-            {
-                $set: {
-                    title,
-                    category,
-                    content,
-                }
-            }
-        );
-
-        if (!obj){
-            throw new BadRequestError('Invalid Blog or User id.');
-        }
-
-        return res.status(200).send('Updated');
-    } catch (error) {
-        console.log(error);
-        next(error);
-    }   
-}
-
-export const DeleteBlog = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { _id } = req.params;
-        const obj = await Blog.findOneAndDelete({ _id, user: req.user?._id });
-
-        if (!obj){
-            throw new BadRequestError('Invalid Blog or User id.');
-        }
-
-        // await Comment.deleteMany({ blog: _id });
-
-        return res.status(200).send('Deleted');
-    } catch (error) {
-        console.log(error);
-        next(error);        
-    }
-}
+    return res.status(200).send("Deleted");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
